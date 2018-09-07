@@ -1,0 +1,39 @@
+				语法基础
+	
+	第二课
+引用内部js文件:
+<script type="text/javascript">可以在此编辑js代码</script>
+
+引用外部js文件：
+<script type="text/javascript" src="index.js"></script>
+
+原始值:
+变量:var a = ;Number:数字 String:字符串 Boolean undefined:变量为空 null
+
+var a = 10;  var b = a;//把a拷贝给b。  a =20; 输出结果为a = 20; b = 10;
+
+原始值栈内存存的是变量的值
+
+
+
+引用值:
+array:数组,object对象,function方法，date, RegExp
+
+var arr = [1,2]; var arr1 = arr; //把堆内存地址拷贝给arr1
+1.arr.push(3);
+2.如果是 arr = [1,3];输出arr = [1,3]; arr1 = [1,2]在堆里开辟新空间
+
+输出arr = 1,2,3;arr1 = 1,2,3;
+
+1.栈内存存的是值(堆内存)得地址,
+2.新的数组赋值给原来的数组，开辟新空间，使用arr1还是以前的数组值
+此时arr地址为heap0002，arr1地址：heap0001
+如：栈:heap0001 ----> 堆:[1,2]
+
+运算符:逻辑性 
+var a = "a" + "b" = ab;
+var a = 1+1+"a" = 2a;
+var a = 1+1+"a"+1+1 = 2+a11;
+var a = 1+1+"a"+(1+1) = 2a2;
+优先级 "="最低，"()"最高
+

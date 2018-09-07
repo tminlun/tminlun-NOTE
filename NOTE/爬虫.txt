@@ -1,0 +1,30 @@
+
+pip install 库名：下载安装库
+
+
+pip install requests
+pip install BeautifulSoup4
+
+简单的框架:
+import requests
+from requests
+
+requests:
+	网络资源URL获取套件
+	使用rest操作（post,put,get,delete）获取网络资源
+
+
+	第一课
+
+url = ''
+    #打开相应的url并把相应的页面作为返回
+    res = request.urlopen(url)
+    #把返回结果读取出来
+    html = res.read()
+    #利用chardet对网页编码自动检测
+    cs = chardet.detect(html)
+    print(cs)
+    #对html进行解码,cs.get() encoding输出检测的值,如果没有检测为默认utf-8
+    html = html.decode(cs.get("encoding","utf-8"))
+
+

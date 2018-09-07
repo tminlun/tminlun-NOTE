@@ -1,0 +1,1109 @@
+同时开启两个Django项目：设置两个不同的端口 python manage.py runserver 8001(默认为8000)
+Django2.0 匹配 python3.6
+安装：pip install Django==2.0.6
+创建项目命令:创建一个文件夹在文件路径输入cmd,在cdm输入django-admin startproject<项目名>
+***django-admin startproject mysite
+
+manage:管理整个django项目的文件
+mysite:Python包
+settings.py:全局设置文件(源码)
+urls.py:全局路由控制
+wsgi.py:服务器使用wsgi部署的文件
+db.sqlite3:整个数据库
+
+在mysite创建一个views.py文件。
+views.py:
+    from django.http import HttpResponse #在 django 中，请求报文已经被封装成了 HttpRequest 对象,这个对象由 HttpResponse 类创建,类位于 django.http 模块中
+
+    def index(request):
+    	return HttpResponse("Hello,World")
+
+导入urls.py文件:from . import views
+urls.py:
+    from . import views
+    ***path('admin/', admin.site.urls):后台管理。创建账号:***python manage.py createsuperuser*** (我的账号:tml  密码:text123456)
+    path('',views.index) :访问首页
+
+path(路径):Django的方法,规定什么网址有效访问
+
+***启动本地服务：打开mysite,路径输入:cmd,输入命令 python manage.py runserver
+在浏览器输入http://127.0.0.1:8000/(localhost:8000)
+
+导入数据库:python manage.py migrate
+
+
+
+
+				第三课 
+
+
+
+创建应用(app):python manage.py startapp 应用名称(app名称)
+如:python startapp article(文章)
+
+models.py(模型):
+from django.db import models
+
+class Article(models.Model):
+    title = models.CharField(max_length=30)
+    content = models.TextField
+Article(模型的名称),继承Model(models.Model): **Field:字段**  字符字段title=models.CharDFeld(max_length=30)
+内容字段:models.TextField()
+
+diango里面注册(我要用这个app)APP:打开mysite,打开setting.py，
+在INSTALLED_APPS(安装了的app) 里面添加一个app:article,
+
+制造迁移:python manage.py makemigrations
+迁移:运行迁移：
+
+0001_initial应用的文章 python manage.py migrate
+
+#在后台管理登记一个网站
+从后台管理导入一个模板:打开app(article)里面的admin.py:
+	admin.py:
+from .models import Article
+
+ 导入一个模板的名称
+admin.site.register(Article)
+
+改后台管理的语言为简体中文:打开浏览器新建一个内容.然后打开mysite/mysite里面的settings.py(源码)
+把LANGUAGE_CODE = 'en-us'改成LANGUAGE_CODE = 'zh-Hans'
+
+
+
+
+		第四课：使用模板显示内容
+
+
+
+
+
+如何通过一个处理方法获取文章唯一的标识(id):
+
+article/_pycache_/0001_initial: 数据库迁移的文件。
+
+    写处理方法的地方(views.py)：
+    from django.shortcuts import render
+    from django.http import HttpResponse
+
+    def	article_detail(request,article_id):
+        return HttpResponse('文章id: %s' %article_id)
+
+接着打开mysite总路由控制urls.py:
+   导入刚刚写的处理方法：
+from article.views import article_detail
+urlpatterns = [
+    path('admin/', admin.site.urls),
+    path('',views.index)
+    path('article(app名称)/<int: article_id>(一个int变量)', article_detail(传入方法),name="article_detail"(别名))
+]
+
+把article(app)的模板(models.py)的标题和字段引入进article的views.py
+
+我们快要使用 objects来获取或操作 模型 的对象
+（objects:模型管理对象）:article = Article.objects.get(条件(获取第几条记录)),
+ 此时article是Article(模型)的对象
+views.py:
+    from django.shortcuts import render
+    from django.http import HttpResponse
+    from article.models import Article
+
+    def article_detail(request,article_id):
+        article = Article.objects.get(id = article_id)（这里的id是在数据库迁移文件那里(0001_initial)）
+        return HttpResponse("<h1>文章标题为: %s</h1> 文件内容为:%s" %(article.title,article.content))
+
+当输入http://127.0.0.1:8000/article/4:就是没有模板的id时,会报错
+(1)在上面导入一个方法：from django.http import HttpResponse,Http404
+(2)在上面捕捉异常:
+def article_detail(request,article_id):
+    try:
+        article = Article.objects.get(id = article_id)（这里的id是在数据库迁移文件那里(0001_initial))
+    except Article.DoesNotExist:(Article模板的异常)
+        raise Http404("not exise")（raise:作为一个错误抛出出去）
+    return HttpResponse("<h1>文章标题为: %s</h1> 文件内容为:%s" %(article.title,article.content))
+
+前端页面和后端代码分离(减低耦合性):
+
+在article创建一个文件夹，名为：templaes(Django已经规定好的文件)
+
+***“规定好的”是在(mysite/settings.py):
+'BACKEND': 'django.template.backends.django.DjangoTemplates',是Django的模板系统
+'DIRS': [],指定一个目录
+'APP_DIRS': True,app里面的模板文件夹，表面他是有效的(就是让article/templates读取的到)***
+
+在templates创建HTML文件:article_detail.html(表明是article.detail方法的html文件)
+
+打开article/views.py:
+1.删除:return HttpResponse("<h1>文章标题: %s</h1> 文章内容: %s" %(article.title,article.content))
+2.在article = Article.objects.get(id=article_id)后面返回:
+return render(request,"article_detail.html",context)
+第一个参数:request(请求页面),第二个参数:模板页面的名称,第三个参数:一个字典
+3.在article = Article.objects.get(id=article_id)后面定一个字典:context{}
+4.context{}后面:把article对象赋值给字典.
+(context['article_obj'] = article)
+
+如：def article_detail(request,article_id):
+    try:
+        article = Article.objects.get(id=article_id)
+        context = {}
+        context['article_obj'] = article
+        return render(request,"article_detail.html",context)#article_detail.html:模板页面的地址
+    except Article.DoesNotExist:
+    	raise Http404("not exise")
+
+优化代码
+（render,render_to_response显示模板页面，get_object_or_404抛出404异常）：
+传入一个django方法:from django.shortcuts import render,render_to_response
+把return render(request,"article_detail.html",context)删除,(可以省写request)
+变成return render_to_response("article_detail.html",context)
+
+可以省略try:传入一个django方法:from django.shortcuts import render,render_to_response,get_object_or_404
+
+如:def article_detail(request,article_id):
+       article = get_object_or_404(Article,id = article_id)#id主键，也可以pk = article_id
+       #获取文章页面
+       context = {}
+       context['article_obj'] = article
+       return render_to_response("article_detail.html",context)
+
+文章列表(不知道文章id是多少,可以通过一个文章的列表去选择你想要的文章地址):
+在 article/views.py 添加一个方法:
+
+def article_list(request):
+    articles = Article.objects.all()#获取全部的文章列表
+    #获取文章页面，返回给前端
+    context = {}
+    context['articles'] = articles
+    return render_to_response("article_list.html",context)
+
+接着找到总路由器mysite/urls.py:
+传入方法：from article.views import article_detail,article_list
+添加一个路径:path('article/', article_list,name=' article_list'),
+
+
+
+
+在templaes中创建一个HTML文件:
+article_list.html:
+html的模板方法：
+{% for article in articles %}
+<a href="/article/article.id">{{article.title}}</a>#/(根目录)article/article.id(article.pk)pk：主键别名
+{% endfor %}
+让a标签有更简洁的方法（url）:<a href="{% url 'article_detail' article.id %}">{{article.title}}</a>
+
+通过总urls包括app的urls:总urls---app1的urls,  urls---app2的urls。
+把总路由器的article(app)的两个路由器剪切,接着在article文件里创建一个名为urls.py文件
+article/urls.py:
+	把article(app)的两个路由器剪切进去,再把urlpatterns = []复制进去,
+	把from django.urls import path(路径方法)复制进去,
+	把from article.views import article_detail,article_list改成from . import views
+如：
+from django.urls import path
+from . import views
+urlpatterns = [
+    path('article/<int:article_id>', views.article_detail, name='article_detail'),
+    path('article/', views.article_list, name='article_list'),
+
+]
+
+mysite/urls.py:
+用include方法，把app的urls包含进来（from django.urls import path,include）
+添加一个path:path('article/',include('article.pk'))  pk:主键
+如：
+from django.contrib import admin
+from django.urls import path,include
+from . import views
+
+
+urlpatterns = [
+    path('admin/', admin.site.urls),
+    path('',views.index),
+    path('article/',include('article.urls')),
+]
+
+最后把article/urls.py的path里面的article/删除:
+如：
+urlpatterns = [
+    #http://127.0.0.1:8000/article/1
+    path('<int:article_id>', views.article_detail, name='article_detail'),
+
+    #http://127.0.0.1:8000/article/
+    path('', views.article_list, name='article_list'),
+
+]
+
+
+	
+				第五课(定制后台和修改模型)
+
+
+
+
+一.定制admin后台
+
+1.运行后台，打开http://127.0.0.1:8000/admin/
+2.打开app(masite/article)的模型models.py:
+在Article类里面添加一个方法:
+#标注后台的具体是哪个模型对象,因为有模型与模型的调用
+def __str__(self):
+    return "<Article: %s>" % self.title #当前对象的title
+
+3.打开article/admin.py:
+
+from django.contrib import admin
+from .models import Article
+
+# Register your models here.
+s
+@admin.register(Article):(5)装饰器:django的自带装饰器
+class ArticleAdmin(admin.ModelAdmin):(1)#在这里添加一个类(Article模型的定制方法)：#继承了admin的ModelAdmin方法
+(3)#列表显示(元组,写好不可变),id主键
+    list_display = ("id","title","content",)
+    ordering=("id",)让id正序排序,-id为倒序
+
+(2)#在这里登记后台模型类,传入模型类ArticleAdmin
+admin.site.register(Article,ArticleAdmin)
+(4)注释#admin.site.register(Article,ArticleAdmin),因为又更好的方法代替他(装饰器),又因为它不在后台模型类里面,以后会有很多模型方法
+
+
+二.修改模型：(要更新数据库(python manage.py makemigrations(更新),python manage.py migrate(运用)),需要设置默认值):
+
+第一种方式:
+1.改数据库之前，备份数据库,
+2打开article的models.py:
+from django.db import models
+
+(2)导入方法timezone
+from django.utils import timezone
+
+# Create your models here.
+class Article(models.Model):
+    title = models.CharField(max_length=30)
+    content = models.TextField()
+    (1)添加个时间字段:
+    created_time = models.DateTimeField(default = timezone.now)
+
+(3)cmd里面更新数据库:python manage.py makemigrations;运用数据库python manage.py migrate
+
+第二种方式:时间字段特有的
+
+如上步骤相同，只需要在添加时间字段改一下:
+
+#auto_now_add=True  添加时的时间，改或添加不会变动
+created_time = models.DateTimeField(auto_now_add=True)
+
+
+如果出现如下：
+1) Provide a one-off default now (will be set on all existing rows)
+
+ 2) Quit, and let me add a default in models.py
+Select an option:(在这里输入:1)1
+[default: timezone.now] >>>timezone.now(在这里输入)
+
+2.最后修改的时间:
+auto_now:你改或添加，时间为你改或添加时的时间
+last_updated_time = models.DateTimeField(auto_now=True)                                                              
+
+3.添加个外键（作者的名称）:
+(1).去掉无用的from django.utils import timezone
+
+添加一个模块:from django.contrib.auth.models import User
+auth模块时django提供的标准权限管理系统，可以提供用户身份认证，用户组和权限管理，
+User表是auth模块中维护用户信息的关系模式：
+
+
+(2).先故意打错作者名字以展示怎么修改名字:authr = models.ForeignKey(User,no_delete=models.DO_NOTHING,default=1)
+User:关联表，no_delete:(表示文章被删除后，是否删除外键外键author)， 
+DO_NOWHING:你们删除你们的，不管我事(不删除外键author)，default:默认值(自己的用户名)
+
+(3).在admin.py显示列表中加入作者名称:
+class ArticleAdimin(admin.ModelAdmin):
+    list_display=("id", "title","authr", "content","created_time","last_updated_time",)
+    ordering = ("id",)
+
+(4)修改作者名称:在模板中直接修改名字:author = models.ForeignKey(User,no_delete=models.DO_NOTHING,default=1)
+记住后台admin也要修改list_display=("id", "title","author", "content","created_time","last_updated_time",)
+
+(5)更新数据库,在cmd里输入：python manage.py makemigrations,
+会有个提示：Did you rename article.authr to article.author (a ForeignKey)? [y/N] y  (输入y就行了)
+提交数据库:python manage.py migrate,运行一下python manage.py runserver
+
+(6).添加一个Boolean值表示是否删除:
+is_deleted = models.BooleanField(default=False) default意思为默认值
+添加一个数值表示阅读数量(注:真实开发中不是这样定义阅读数量):
+read_num = models.IntegerField(default=0) default：默认值,	IntegerField整形字段
+
+添加到article/admin.py ：把是否删除字段添加到显示列表中就行了
+list_display=("id", "title","content","author","is_deleted", "created_time","last_updated_time",)
+**更新数据库***
+
+(7)把删除的对象从app页面(article)中消失，打开article/views.py：
+修改获取文章列表: articles = Article.objects.all()#文章对象,获取全部文章列表修改成article = Article.objects.filter(is_deleted=False)
+修改前的:
+def article_list(request):
+    articles = Article.objects.all()#文章对象,获取全部文章列表
+    #获取文章页面
+    context = {}
+    context['articles'] = articles
+    return render_to_response("article_list.html",context)
+
+修改后:
+def article_list(request):
+    articles = Article.objects.filter(is_deleted=False)#文章对象,显示没有删除的文章列表
+    #获取文章页面
+    context = {}
+    context['articles'] = articles
+    return render_to_response("article_list.html",context)
+
+
+		第七课:制作博客
+
+一、
+1网站的功能模块:博客(博文,博客分类,博客标签)、评论、点赞、阅读、用户(使用第三方登录:QQ/微博)
+
+功能模块 == Django App
+
+2开启本地虚拟环境
+1) 避免多个项目之间python库的冲突(如:Django1.8 和Django2.0 )
+2)完整便捷导出python库的列表
+
+3在(C:\Users\ASUS>)安装虚拟环境包:pip install virtualenv
+
+4删除虚拟环境外的 Django2.0： pip uninstall Django
+提示Proceed (y/n)? y (输入y)
+
+5.创建虚拟环境
+
+二、创建虚拟环境
+1.在桌面(C:\Users\ASUS\Desktop)创建虚拟环境:输入：cmd
+
+2.在cmd里面创建虚拟环境文件夹:virtualenv mysite_env
+
+3.启动虚拟环境:【mysite_env/Scripts/activate（activate:激活的意思)】
+
+4.在cmd切换到mysite_env（cd mysite_env）输入:Scripts\activate(激活)
+激活成功是这样的:(mysite_env) C:\Users\ASUS\Desktop\mysite_env>
+
+5在虚拟环境下安装Django2.0
+(mysite_env) C:\Users\ASUS\Desktop\mysite_env>  pip install Django==2.0
+
+6退出虚拟环境:deactivate
+
+7.pip list查询一下虚拟机外是否有Django2.0
+
+Django安装在了Lib/site-packages
+
+三、初步创建博客(blog)应用,  (博文 + 博客分类)
+
+进入虚拟环境(Scripts\activate),
+
+1.创建一个项目:django-admin startproject mysite
+
+2.cd mysite 进入到我的APP,查询进面有什么文件:dir
+
+3.创建APP(创建一个app叫blog):python manage.py startapp blog
+
+4.开始写代码:把mysite_env/mysite文件拉进Sublime Text编辑
+
+5.在mysite/blog/models.py写入 博客的标题、内容、创建时间，修改时间、博客分类:
+
+打开mysite/blog/models.py(模型)：
+
+from django.db import models
+from django.contrib.auth.models import User
+
+(2)博客分类模型 (一个博客一个分类)，此博客的分类：因为要把博客分类(BlogType)传入博客(Blog),所以要放在模块前面
+class BlogType(models.Model):
+    type_name = models.CharField(max_length=15)
+
+    def __str__(self):#显示出当前对象的类型(名称)，不加这个方法显示出是一个对象乱码
+	return self.type_name
+
+
+(1)(Blog模型):****注意：一定要和APP名一致*****
+class Blog(models.Models):
+	title = models.CharField(max_length=50)
+	#博客外键，用别的模型的字段
+	blog_type = models.ForeignKey(BlogType,on_delete=models.Do_NOTHING)#删除了博客，删除不了分类
+	content = models.TextField()
+	author = models.ForeignKey(User,on_delete=models.DO_NOTHING) #User关联表
+	created_time = models.DateTimeField(auto_now_add=True)#修改不可改变
+	last_updated_time = models.DateTimeField(auto_now=True)#修改可以改变
+
+	def __str__(self):
+		return "<Blog :%s>" % self.title
+
+
+6.记得初始化数据库,因为刚刚创建了很多字段，而且这样才能创建超级管理员: python manage.py makemigrations、python manage.py migrate
+
+7.创建超级管理员:python manage.py createsuperuser(账号:tml 密码:text123456)
+
+8.注册APP:mysite/mysite/settings.py:
+INSTALLED_APPS = [
+    'django.contrib.admin',
+    'django.contrib.auth',
+    'django.contrib.contenttypes',
+    'django.contrib.sessions',
+    'django.contrib.messages',
+    'django.contrib.staticfiles',
+    'blog',
+]
+
+9.打开blog/admin.py:#因为要在后台显示模型(models)
+(1)导入模块(注:模块的先后顺序):from .models import BlogType,Blog
+
+(2)创建一个后台的博客类型:
+
+@admin.register(BlogType)#装饰器,注册在admin
+class BlogTypeAdmin(admin.ModelAdmin):
+    list_diplay = ('id','type_name')
+
+
+(2)创建一个后台的博客:
+@admin.register(Blog) :注册到admin
+class BlogAdmin(admin.ModelAdmin):
+    list_display = ('title','blog_type','author','created_time','last_updated_time')
+
+
+10.扩展知识:一键导出和安装
+  我们在开发中，会用virtualenv创建很多python独立的项目
+在出现不同环境安装系统模块的时候，为了避免通过互联网下载所需要的内容
+不如我们直接从之前python环境已经有的模块拿出来用，这时候就需要：
+
+pip freeze(冻结) > requirements.txt 这个命令把所有之前的模块放在requirements.txt文件里面
+
+别的模块要用之前定义包装好的模块的时候使用:
+
+pip install -r requirements.txt
+
+
+
+
+
+						第八课：常用的模板和过滤器
+
+一、把博客列表和博客细节做好
+
+1.打开blog/views.py:
+导入方法:from django.shortcuts import render_to_response
+
+定义两个函数：
+def blog_list(request):博客列表
+    pass
+
+def blog_detail(request,blog_pk):博客细节
+    pass
+
+2.
+from django.shortcuts import render_to_response,get_object_or_404
+from .models import Blog
+
+#博客首页
+def blog_list(request):
+    2)context = {}
+    3)context['blogs'] = Blog.objects.all()#获取所有的博客
+    1)return render_to_response('blog_list.html', context)
+
+#博客细节
+def blog_detail(request,blog_pk):
+    2)context = {}
+    #可能跳转到别的页面会出错所有用404
+    3)context['blog'] = get_object_or_404(Blog, pk = blog_pk)
+    1)return render_to_response('blog_detail.html',context)
+
+3.配置两个函数的路由:(博客细节urls在blog/urls下，博客列表简称首页放在mysite/urls下)
+1)在blog创建名为urls的py文件:
+导入函数:
+from django.urls import path
+from . import views
+
+urlpatterns = [
+    path('<int:blog_pk>',views.blog_detail, name="blog_detail"),
+]
+
+2)把blog/urls包含进mysite/urls总路由:打开mysite/urls中：
+
+导入方法 
+from django.urls import path,include
+from blog import urls
+写包含路径
+urlpatterns = [
+    path('admin/', admin.site.urls),
+    *path('blog/',include('blog.urls')),
+]
+ 
+
+3)在mysite/urls下创建首页路由
+ 导入方法：from blog.views import blog_list
+ 首页现在最前面：
+urlpatterns = [
+    *path('',blog_list, name="home"),
+    path('admin/', admin.site.urls),
+    path('blog/',include('blog.urls')),
+]
+
+4.先在mysite/blog下创建一个文件:templates,在templates创建两个html,
+1)blog_list.html:
+
+    {% for blog in blogs %}{# 遍历所有的博客 #}
+        <h3>
+            <a href="{% url 'blog_detail' blog.pk %}">
+                {# django的模板方法url 路由的别名，路由打的主键（注意:blog.pk） #}
+                {{ blog.title }}
+            </a>
+        </h3>
+        <p>{{ blog.content|truncatechars_html:30 }}</p> 过滤器：如果内容很多可以限制为30个
+        <p>分类：
+            {{ blog.blog_type }}</p>
+        {# 如果没有博客 #}
+        {% empty %}
+        <p>--暂无博客，敬请期待--</p>
+    {% endfor %}
+    <p>一共有{{ blogs|length }}篇博客</p> 过滤器：计算有多少个博客
+</body>
+
+
+2)blog_detail.html:	
+    {# 带有|叫过滤器：截取时间 #}
+    <p>{{ blog.created_time|date:"Y-m-d H:i:s" }}</p>
+
+5.定义一个分类的函数、路由和显示页面：
+1).定义路由:
+urlpatterns = [
+    path('<int:blog_pk>',views.blog_detail, name = 'blog_detail'),
+    path('type/<int:blog_with_type_pk>',views.blogs_with_type,name="blogs_with_type")
+]
+2)在blog/views写一个blogs_with_type方法：
+def blogs_with_type(request, type_pk):
+    2.context = {}
+    4.blog_type = get_object_or_404(BlogType,pk=type_pk)#可能获得类型名字会出错
+    3.context['blogs'] = Blog1.objects.filter(blog_type=blog_type)#filter筛选只显示出类型
+    5.context['blog_type'] = blog_type #把获取到的类型 对象 传入字典
+    1.return render_to_response('blogs_with_type.html',context)
+
+3)创建html：名为blogs_with_type.html
+<head>
+    <title>{{ blog_type.type_name }}</title>
+</head>
+<body>
+    <div>
+		<h3>
+			<a href="{% url 'home' %}">个人博客网站</a>
+		</h3>
+	</div>
+	<hr>
+    <h3>{{ blog_type.type_name }}</h3>
+    {% for blog in blogs %}
+        <h3>
+            <a href="{% url 'blog_detail' blog.pk %}">{{ blog.title }}</a>
+        </h3>
+        <p>{{ blog.content|truncatechars_html:30 }}</p>
+        {% empty %}
+        <p>--暂无博客，敬请期待--</p>
+    {% endfor %}
+        <p>一共有{{ blogs|length }}篇博客</p>
+</body>
+
+
+		第九课：模板嵌套
+
+
+一、常用的模板标签：
+循环  ：for
+条件：if
+链接：url
+模板嵌套：block、extends、include
+注释：{# #}
+
+二、HTML文件有很多，相同的也有很多，我们可以通过把每个相同的HTML代码拷贝出来，作为一个共同使用的框架。
+ 1.在blog/templates创建一个名为base（作为基础）.html文件存储相同的HTML代码，作为一个框架：
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>{% block title %}{% endblock %}</title>
+</head>
+<body>
+	<div>
+		<h3 style="text-align: center;">
+            <a href="{% url 'home' %}">个人博客网站</a>
+        </h3>
+	</div>
+	<hr>
+	{% block content %}{% endblock %}
+</body>
+</html>
+
+2.把不相同的内容（标题和内容）：用模板标签修饰
+标题：<title> {% block title %}{% endblock %} </title>
+内容：{% block content %}{% endblock %}
+
+3.此时打开以前的HTML文件，把不同的(如：标题，内容)提取出来，把刚刚相同的代码(base.html)的代码删除，把内容补全，如：
+
+*继承 base.html文件(extends，参数为文件名)
+{% extends 'base.html' %
+
+*页面标题 里面填入不同(自己独有)的标题
+{% block title %}
+	{{ blog_type.type_name }}
+{% endblock %}
+
+*页面 内容 里面填入不同(自己独有)的内容
+{% block content %}
+	<h3>{{ blog_type.type_name }}</h3>
+	{% for blog in blogs %}
+		<h3>
+			<a href="{% url 'blog_detail' blog.pk %}">
+				{{ blog.title }}
+			</a>
+		</h3>
+		<p>{{ blog.content|truncatechars_html:30 }}</p>
+		{% empty %}
+		<p>--暂无博客，敬请期待--</p>
+	{% endfor %}
+	<p>一共有{{ blogs|length }}篇博客</p>
+{% endblock %}
+
+三、全局模板文件夹：此时不能把相同模板放在一个APP文件里
+如果有两个APP，两个都要用同一个相同的模板框架，这时候要用全局模板文件夹。
+
+1.打开mysite_env/mysite(项目),创建一个共同模版文件:templates
+把共同html文件剪切到mysite_env/mysite/templates里面
+
+2.打开源文件(settings.py),
+BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))：这是根目录
+
+找到TEMPLATES(模板)：
+1).'APP_DIRS': True：所有的templates文件夹都是有效的，都可以访问
+2).'DIRS': []：加入参数全局都可以访问templates的
+3). os.path.join(),Django**不允许**直接用 （D:\PycharmProjects\BlogTemplate\mysite_env\mysite\templates路径）
+   Django的方法，参数第一个为跟目录，第二个参数为全局模板文件名，可以把这路径拼接起来
+        'DIRS': [
+            os.path.join(BASE_DIR,'templates'),Django的方法，参数第一个为跟目录，第二个参数为全局模板文件名，可以把这路径拼接起来
+        ],
+四、把全部模板都放在全局模板那里，因为到时候如果是（这个项目共同模板文件放在另外一个项目上）
+1.在全局模板文件创建一个文件夹专门放APP ：blog模板的文件
+2.把blog/templates所有html文件剪切到mysite_env/templates/blog下
+
+
+
+
+			第十课：css美化页面
+
+一、打开mysite/templates/base
+ 加上首页和博客两个超链接
+<div>
+		<h3 style="text-align: center;">
+            <a href="{% url 'home' %}">个人博客网站</a>
+        </h3>
+        <a href="{% url '' %}">首页</a>
+        <a href="{% url '' %}">博客</a>
+	</div>
+二、区分好总首页和博客首页
+1.博客首页:
+blog/urls:
+urlpatterns = [
+	#http://127.0.0.1:8000/blog博客首页
+	path('',views.blog_list, name="blog_list"),
+    path('<int:blog_pk>',views.blog_detail, name = 'blog_detail'),
+    path('type/<int:blog_with_type_pk>',views.blogs_with_type,name="blogs_with_type")
+]
+2.总首页:
+urlpatterns = [
+    #总首页
+    path('', , name='home'),
+    path('admin/', admin.site.urls),
+    path('blog/',include('blog.urls')),
+]
+
+
+三、在mysite创建一个views文件显示首页
+from django.shortcuts import render_to_response
+
+#总首页
+def home(request):
+	context = {} #不需要传入其他东西
+	return render_to_response('home.html',context)
+
+
+四、在mysite_env/mysite/templates创建一个总首页名为home.html文件
+{% extends 'base.html' %}
+
+{% block title %}
+	我的博客|首页
+{% endblock %}
+
+{% block content %}
+	<h3>欢迎访问我的网站，随便看哦</h3>
+{% endblock %}
+
+五、配置总首页路由：
+传入当前目录的views
+from . import views
+
+
+urlpatterns = [
+    #总首页
+    path('', views.home, name='home'),传入home方法
+    path('admin/', admin.site.urls),
+    path('blog/',include('blog.urls')),
+]
+
+六、开始装饰首页网站：
+1.在mysite_env/mysite 创建一个名为static的文件夹：专门放置css，mages，js
+2.在mysite_env/mysite/static里面创建base.css文件
+
+3.打开settings源代码
+BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))（base的路径）
+
+1)找到STATIC_URL = '/static/'：这是static的根路径
+2)添加一个方法：
+STATICFILES_DIRS = [这是静态文件夹，可以放很多路径
+    3)添加一个os方法：os.path.join(BASE_DIR,'static') 传入base的路径
+]
+
+4.打开base.html:
+传入css方法一：<link rel="stylesheet" type="text/css" href="/static/base.css">
+/static/根目录
+
+传入css方法二：找到settings源代码，找到安装好的APP：
+INSTALLED_APPS = [
+    'django.contrib.admin',
+    'django.contrib.auth',
+    'django.contrib.contenttypes',
+    'django.contrib.sessions',
+    'django.contrib.messages',
+    'django.contrib.staticfiles',安装好的静态文件
+    'blog1',
+]
+
+***在这加载静态文件{% load staticfiles %}(模板标签)
+		    <!DOCTYPE html>
+		    <html lang="en">
+
+在title下面传入css文件：<link rel="stylesheet" type="text/css" href="{% static 'base.css' %}">
+
+5.打开base.css开始装饰共同的首页导航栏：（删除base.html的<hr>）
+*{
+	padding: 0;
+	margin: 0;
+	font-family: "Times New Roman";
+}
+.nav{
+	padding: 10px 5px;
+	background-color: #eee;
+	border-bottom: 1px solid #ccc;
+}
+div.nav a{
+
+	padding: 5px 10px;
+	text-decoration: none;
+	color: #000;
+}
+div.nav a.logo{
+	font-size: 120%;
+	display: inline-block;
+}
+
+6.修饰首页的内容：
+1)在mysite_env/mysite/static下创建一个名为home.css文件：
+
+2)在base.html：
+    <link rel="stylesheet" type="text/css" href="{% static 'base.css' %}">
+    这里添加一个模板嵌套方法(头对其他页面进行扩展)：{% block head_extends %}{% endblock %}
+
+3)在home.html：
+{% extends 'base.html' %}
+
+**{% load staticfiles %}{# 必须加载静态文件 #}
+
+{% block title %}
+	我的网站|首页
+{% endblock %}
+
+**{% block head_extends %}
+	<link rel="stylesheet" type="text/css" href="{% staic 'home.css' %}">
+**{% endblock %}
+
+{% block content %}
+	欢迎访问我的网站，随便看
+{% endblock %}
+
+
+					
+			第11课：css框架协助前端布局
+
+使用Bootstrap框架(js，css)：
+文档齐全，使用简单、兼容较多浏览器、非轻量级；
+
+一、打开http://www.bootcss.com/,点击起步
+
+bootstrap-theme.css有theme叫主题文件(一般不用导入)；bootstrap.min.css核心文件，需要导入
+
+1.用于生产环境的 Bootstrap,点击下载 bootstrap
+2.下载完，解压到桌面，
+里面有js和css，font：字体文件，字体图标
+1）.css：bootstrap.css 没压缩过的；bootstrap.min.css压缩过的
+2）.js：bootstrap.min.css只需要这个就够了
+3.mysite_env>mysite>static创建一个名为bootstrap-3.3.7的文件，
+把解压完的bootstrap-3.3.7里面的三个文件(css,js,font)复制进mysite_env>mysite>static/bootstrap-3.3.7，
+
+4.css留着bootstrap.min.css和bootstrap.min.css.map，其他删除
+js只留着bootstrap.min.js，font不用管它
+
+5.引入文件，打开base.html:
+1)先引入css文件：<link rel="stylesheet" type="text/css" href="{% static 'bootstrap-3.3.7/css/bootstrap.min.css' %}">
+2)引入js文件：<script type="text/javascript" src="{% static 'bootstrap-3.3.7/js/bootstrap.min.js' %}"></script>
+
+3)<meta charset="UTF-8">
+    <!-- 告诉IE浏览器，给我使用最新内核 -->
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <!-- 响应式:根据不同的屏幕，自动响应布局 -->
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>{% block title %}{% endblock %}</title>
+
+4)引入jQuery/1.12.4:是js的库，解决js在不同游览器兼容的问题
+直接用网址下载,下载到mysite_env>mysite>static,(https://cdn.bootcss.com/jquery/1.12.4/jquery.min.js)，
+改名为1.12.4的版本：jquery/1.12.4/jquery.min.js,
+<script type="text/javascript" src="{% static 'jquery-1.12.4.min.js' %}"></script>
+细节：如果代码量很多可以发在HTML标签最后面(</body>前面)
+
+5)栅格系统：一行规定12列。(和加起来12列就行了)
+6)设置导航栏：组件里面找到导航条,输入代码：
+<div class="navbar navbar-default" role="navigation"><!-- 因为不是nav标签，所以要加role="navigation" -->
+    <div class="container-fluid"><!-- 按照百分比填满页面 -->
+
+      <div class="navbar-header"><!-- logo部分 -->
+        <a class="navbar-brand" href="{% url 'home' %}" title="logo">个人博客网站</a>
+      </div>
+
+      <ul class="nav navbar-nav"><!-- 首页和博客列表 -->
+        <li><a href="{% url 'home' %}" title="首页">首页</a></li>
+        <li><a href="{% url 'blog_list' %}"target="_blank">博客</a></li>
+      </ul>
+
+    </div>
+  </div>
+7）删除以前的导航条base.html代码，
+和base.css代码，留下一个*{
+	margin: 0;
+	padding: 0;
+	/*font-family: "微软雅黑";*/
+}
+
+8)响应式布局:手机和电脑看的是不一样的
+在 个人博客网址(logo) 下面输入button标签：data-toggle="collapse" data-target="#bs-example-navbar-collapse-1对应ul父级div的class和id
+     <div class="navbar-header"><!-- logo部分 -->
+        <a class="navbar-brand" href="{% url 'home' %}" title="logo">个人博客网站</a>
+	<button class="navbar-toggle collapsed" **data-toggle="collapse" data-target="#bs-example-navbar-collapse-1"***>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+        </button>
+      </div>
+
+     <div id="bs-example-navbar-collapse-1" class="collapse navbar-collapse" >
+                <ul class="nav navbar-nav">
+                    <li><a href="{% url 'home' %}">首页</a></li>
+                    <li><a href="{% url 'blog_list' %}">博客</a></li>
+                </ul>
+      </div>
+_
+9)点击选中会显示出选中状态:<li class="active">
+直接在li的class加个模板标签<li class="{% block nav_home_active/nav_blog_active %}">
+点击首页的：class="{% block nav_home_active %}{% endblock %}"，点击博客首页、细节和分类是{% block nav_blog_active %}{% endblock %}
+使得其他标签(home，博客首页细节、分类)可以输入自己的active
+
+
+
+			12.Bootstrap响应式布局
+
+
+一.可能mysite/templates里面的app（blog）等，会重名.如果重名Django只会找到第一个就不会找到第二个
+所以将mysite/templates/blog剪切到mysite/blog/templates
+
+二.设置栅格(超小、小、中和大屏幕)和面板
+注意栅格从小到大排序
+1..container(固定宽度)它是固定的,.row必须包含在.container中
+
+2.中等屏幕：
+    <div class="container">
+        <div class="row">
+            <div class="col-md-8"></div>
+            <div class="col-md-4"></div>
+        </div>
+    </div>
+3.设置面板(内容,分类)内容放在8列，分类放在4列：
+(1)设置分类:打开bootstrap/组件/面板:
+<div class="col-md-4">
+    <div class="panel panel-default">
+        <div class="panel-heading">博客分类</div>
+            <div class="panel-body">
+                <ul>
+                    {% for blog in blogs %}
+                       <li>{{ blog }}</li>
+                     {% empty %}
+                            <li>暂无分类，敬请期待！</li>
+                      {% endfor %}
+                 </ul>
+          </div>
+      </div>
+</div>
+
+1)此时blog/views中的blog_list方法没有获取分类，此时获取分类：
+def blog_list(request):
+    context = {}
+    context['blog_types'] = BlogType.objects.all()#获取所有的博客分类
+    context['blogs'] = Blog1.objects.all()#获取所有的博客
+    return render_to_response('blog/blog_list.html', context)
+
+(2)设置内容
+<div class="col-md-8">
+    <div class="panel panel-default">
+         <div class="panel-heading">博客列表（一共有{{ blogs|length }}篇博客）</div>
+         <div class="panel-body">把内容剪切进去就OK</div>
+(3).去掉分类ul的点：
+设置css：<ul class="blog-types">
+方法：在mysite/blog中创建一个名为static的文件，在static创建名为blog的文件,在mysite/blog/static里面创建一个名为blog-type的css文件
+
+blog-type.css:
+.blog-types{
+    list-style: none;
+}
+
+(4).blog_list引入css：
+{% load staticfile %}
+{% static 'blog/blog_list.css' %}
+(5)重新启动服务器才能看到效果
+
+4.设置小屏幕，因为有些用户是用手机看的，当宽度小于970后分类会自动掉下去
+(1)bootstrap/全局css/栅格系统/栅格参数
+(2)在内容添加col-sm-8：<div class="col-sm-8 col-md-9">
+在分类添加col-sm-4：<div class="col-sm-4 col-md-3">
+
+5.大屏幕在内容添加col-lg-10：<div class="col-sm-8 col-md-9 col-lg-10">
+在分类添加col-lg-2：<div class="col-sm-4 col-md-3 col-lg-2">
+
+6.当屏幕宽度为超小屏幕时隐藏分类：
+bootstrap/全局css/栅格系统/响应式工具/可用的类
+放在<div class="hidden-xs col-sm-4 col-md-3 col-lg-2">
+
+7.添加分类和发表时间，并且添加图标在分类和时间前面
+<div class="blog">
+  <h3><a href="{% url 'blog_detail' blog.pk %}">{{ blog.title }}</a></h3>
+  <p class="blog-info">
+   **分类<a href="{% url 'blogs_with_type' blog.blog_type.pk %}">{{ blog.blog_type }}</a><!-- blog_type:views.blogs_with_type中的对象 -->
+    **<span class="glyphicon glyphicon-time" aria-hidden="true"></span>{{ blog.created_time|date:"Y-m-d" }}#时间
+  </p>
+  <p>{{ blog.content|truncatechars_html:120 }}</p>
+</div>
+
+8.博客和博客分开一点，打开blog_list.css:
+.blog h3{
+	margin-top: 0.5em;
+}
+
+div.blog:not(:last-child){/*不装饰最后一个*/
+	margin-bottom: 2em;
+	padding-bottom: 1em;
+	border-bottom: 1px solid #eee;
+}
+
+div.blog p.blog-info{
+	margin-bottom: 0;
+}
+
+9.让blog_with_type继承于blog_list:
+
+{% extends 'blog/blog_list.html' %}{# 继承blog_list.html #}
+{% block title %}{{ blog_type.type_name }}{% endblock %}
+
+(1).删除{% block nav_blog_active %}active{% endblock %},因为blog_list已经有了，不需要再写
+
+(2).继承博客列表的标题，因为现要设置的是分类
+<div class="panel-heading">博客列表（一共有{{ blogs|length }}篇博客）</div>
+改为：<div class="panel-heading">{% block head_title %}博客列表（一共有{{ blogs|length }}篇博客）{% endblock %}</div>
+
+(3).直接删除content全部内容,只需修改分类标题：
+{% block head_title %}
+    分类：{{ blog_type.type_name }}
+    （一共有{{ blogs|length }}篇博客）
+    <a href="{% url 'blog_list' %}">返回首页</a>
+{% endblock %}
+
+(4)此时是显示不出来分类栏的，因为views(接受web请求，返回web响应)没有获取全部分类，所以：
+在blog_with_type方法中添加一个对象:context['blog_types'] = BlogType.objects.all()
+
+10.装饰一下博客细节：blog_detail.html
+(1).栅格系统/栅格参数:
+直接设置超小屏幕宽度为10列，因为大屏幕宽度会自动适应
+
+(2)这时候你会发现栅格列有一点点偏移左边，此时打开 栅格系统/栅格参数/列偏移:
+  使用 .col-md-offset-* 类可以将列向右侧偏移，这些实际是通过使用-选择器为当前元素增加了左侧的边距(margin-left),例如：.col-md-offset-4是将.col-md-4向右偏移了4个列的宽度
+<div class="col-md-offset-1 col-xs-10">	</div>
+
+(3)作者、发布时间、分类 放在ul>li中：
+<ul>
+    <li><a href="{% url 'blogs_with_type' blog.blog_type.pk %}">{{ blog.blog_type }}</a></li>
+    {# 带有|叫过滤器：时间 #}
+    <li>创建时间为：{{ blog.created_time|date:"Y-m-d H:i:s" }}</li>
+    <li>作者：{{ blog.author }}</li>
+</ul>
+（4）使用css装饰：
+1)首先传入css文件：
+
+ul.blog-info-description{/*去掉ul前面的点*/
+	margin-bottom: 1em;
+	list-style: none;
+}
+ul.blog-info-description li{/*块级模块变成行级模块*/
+	margin-right: 2em;
+	display: inline-block;
+}
+div.blog-content{/*内容首行缩进*/
+	text-indent: 2em;
+}
+
+最后，注 ：为了避免同名冲突：static/app/***.css
+
+
+		
+			13.分页和shell命令模式
+
+一、shell命名模式
+1.输入命令：python manage.py shell
+
+2.导入APP模板的方法:from blog.models import Blog
+
+3.查询有没有导入app模板方法：dir()
+
+4.找到 模板方法Blog 所有的博客:Blog.objects.all()
+
+5.查看博客数量：Blog.objects.all().count()
+也可以这样Blog.objects.count()
+
+6.给Blog类实例化（创建一个对象）:blog = Blog()
+
+7.给Blog类的标题，内容，作者，类型赋值：
+标题 blog(对象).title = 'shell下第一篇'
+内容 blog.content = '******'
+作者 blog.
+
+(1)给类型赋值:
+1)导入BlogType方法:from blog.models import BlogType
+2)查看所有的博客分类：BlogType.objects.all()
+3)给第一个分类实例化(创建一个对象)：
+blog_type = BlogType.objects.all()[0]
+4)把BlogType类实例化的第一个分类 赋值给 Blog的类型：
+blog.blog_type = blog_type
+
+
+
+
+
+
+
+
+
+

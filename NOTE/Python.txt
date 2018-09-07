@@ -1,0 +1,263 @@
+is:是   in:在
+
+									字符串：
+fristname = " i love"
+print(fristname + " ll")
+# i love ll
+print(fristname * 5)# i love i love i love i love i love
+
+
+vpn = "虚幻账号"
+print(vpn[0])#虚
+print(vpn[-1])# 输出“号” ， 反过来字符串最后一个可以是-1
+print(vpn[0:])#虚幻账号
+print(vpn[0:2])# 2 以前的所有字符串 :虚幻
+print(vpn[1:2])#输出 下划线为 1 的字符 ： 幻
+
+print(len("hello"))# 输出 长度5
+van = 'world'
+print(len(van))# 输出 长度5	！！注意只能计算字符串，数字不行
+
+									列表：
+列表名 = [ ...]
+
+palys = [3,6,23,24] #数字列表
+paly = ["pual","james","air jordan","kobe"] #字符串列表
+print(palys[0]) # 输出下划线为 0 的字符 ： 3
+print(paly[2]) # air jordan
+
+								判断if：
+name = 'liming'
+if name is 'liming': 	(if name == 'liming')
+    print("hello liming")
+elif name is 'luck':
+    print('hello luck')
+
+
+palys[1] = 13
+print(palys) #[3, 13, 23, 24]
+append增加的意思 ：添加 例如：palys.append(5)
+输出：[3,13,23,24,5]
+
+
+								for循环：
+world = ['a','ab','abc','adcd']
+for w（循环遍历） in（在） world[0:3]:#下标为3以前的
+    print(w)
+    print(len(w))
+    """a
+	1
+	ab
+	2
+	abc
+	3
+"""
+number = [1,2,3,4,7]
+for n in number:
+    print(n)
+print(len(number))#1 2 3 4 7 5
+						range:如果你需要遍历数字序列，可以使用内置range()函数。它会生成数列
+
+range(一个数字 ：10)：是从0开始:10
+for w in range(5):
+    print(w)#1 2 3 4 5
+    print("ooxx")#输出5次ooxx
+
+range（两个数字：2,10） 是从2开始到10以前的，10不算
+for w in range(2,5):
+    print(w)#输出2,3,4
+    print("ooxx")#输出三次ooxx
+
+
+range（三个数字：2,10,2):前两个从2开始到10以前的数字，第三个数字是递增每一次数字加2
+for w in range(2,12,2):
+print(w) #输出2,4,6,8,10
+
+
+							while循环：
+"""
+以下实例使用了 while 来计算 1 到 100 的总和：
+"""
+first = 1
+num  = 100
+sum = 0
+while first<=num:
+    sum = sum+first
+    first+=1
+print("1到%d的和为 %d"%(num,sum))
+#(num,sum)num的意思是%d(100),sum的意思是第二个%d(5050)
+
+									函数（方法）：
+格式：def 方法名_方法名：_下划线是为了好看(相当于java的方法：RmbMy)
+def rmb_to_my(rmb):
+    count = rmb/7
+    print(count)
+#调用函数,可以重复调用函数
+rmb_to_my(7)
+rmb_to_my(7)
+
+"""
+								参数的默认值：可以直接在函数上给参数初始值
+"""
+def predic_gf_age(my_age = 19):
+    gf_age = my_age / 2 + 8
+    return gf_age
+age2 = predic_gf_age()
+age1 = predic_gf_age(41)
+print(age2)
+print(age1)
+	         						变量:
+成员变量：在函数（方法）外面：所有函数可以访问它
+局部变量：在函数内部，别的方法不能访问他
+
+关键字参数（给指定的参数重新赋值）：
+def keywork_arg(a = 'w',b = 'o'):
+	print(a,b)
+
+keywork_arg()#调用函数，输出 w o 
+keywork_arg(b = 'k')#输出 w k
+
+重要：可变参数：* 可以接收任意（数字，字符串）参数：
+def oxox_kb( * args):
+    total = 0
+    for a in args:
+        total += a
+    print(total)
+
+oxox_kb(3)
+oxox_kb(3,4,5)
+oxox_kb(3,66,999999)
+
+							函数解包：* 将列表作为输入参数，然后一一对应的进行解包
+def hello(a,b,c):
+    return  a,b,c
+
+list = [1,2,3]
+sum = hello(*list)# 将list的包解包 一个一个的赋值给hello作为参数
+print(sum)
+
+							函数压包zip：
+b = ['a','b','c']
+a = [1,2,3]
+letter = zip(a,b)将a，b赋值给元组letter所组成的列表
+for i,j in letter:
+	print(i,j)
+
+return [表达式] 结束函数，选择性地返回一个值给调用方。不带表达式的return相当于返回 None。
+语法
+					Python 定义函数使用 def 关键字，一般格式如下：
+
+def 函数名（参数列表）:
+    函数体
+默认情况下，参数值和参数名称是按函数声明中定义的顺序匹配起来的。
+
+实例
+让我们使用函数来输出"Hello World！"：
+
+>>> def hello() :
+   print("Hello World!")
+
+   
+>>> hello()
+Hello World!
+>>> 
+更复杂点的应用，函数中带上参数变量:
+
+#!/usr/bin/python3
+
+# 计算面积函数
+def area(width, height):
+    return width * height
+ 
+def print_welcome(name):
+    print("Welcome", name)
+
+print_welcome("Runoob")
+w = 4
+h = 5
+print("width =", w, " height =", h, " area =", area(w, h))
+
+
+					匿名函数lambda：临时需要的小函数，需要一个函数，不想命名这个函数。
+answer = lambda x : x*3
+print(answer(6))
+
+lambda可以作为函数参数：1、
+def oxox(answer = lambda x :x*5):
+    print(answer(3))
+oxox()
+2、
+def not_name(num):
+    print(num(5))
+not_name(lambda x:x*4)#可以不使用默认函数，可以构建一个新的lambda函数
+
+
+						字典：字典是另一种可变容器模型，且可存储任意类型对象。
+字典的每个键值 key=>value 对用冒号 : 分割
+每个键值对之间用逗号 , 分割，整个字典包括在花括号 {} 中
+键一般是唯一的，如果重复最后的一个键值对会替换前面的，值不需要唯一
+1）不允许同一个键出现两次。创建时如果同一个键被赋值两次，后一个值会被记住
+2)键必须不可变，所以可以用数字，字符串或元组充当，而用列表就不行
+
+ 						end+" ":print函数不会在字符串末尾添加一个换行符，而是添加一个空字符串
+__name__:
+每个模块都有一个__name__属性，当其值是'__main__'时，表明该模块自身在运行，否则是被引入。
+
+说明：__name__ 与 __main__ 底下是双下划线
+
+							列表解包：a,*b,c = [1,2,3,4,5]一一对应
+print(a)第一个只对应第一个
+print(*b)加了*号表示 除了其他用print输出的字符，中间都是对应它输出子列表
+print(c)输出最后一个
+
+			面向对象：
+class Enemy:
+	#定义一个方法：
+	def attack(self):注意缩进
+#创建对象，实例化类
+enemy = Enemy()
+#调用方法
+enemy.attack()
+
+self: 表示类的实例，并非类；它也表示当前对象的地址
+
+class People:
+    #定义基本属性
+    name = ''
+    age = 0
+    sex = ''
+    #定义私有属性,私有属性外部无法调用它
+    _width = 0
+
+    #定义构造方法
+    def __init__(self,n,a,w,s):
+        self.name = n #当前对象的name等于构造方法的参数
+        self.age = a #把构造方法的参数(传入类的参数),赋值给当前对象的name
+        self._width = w
+        self.sex = s
+
+    def show(self):
+        print("%s 的年龄为：%d\n 身高为：%d\n 性别为：%s" %(self.name,self.age,self._width,self.sex))
+
+
+
+#继承父类(People)
+class Student(People):
+    #学生类的基本属性
+    grade = ''
+    def __init__(self,n,a,w,s,grade):
+        self.grade = grade
+        #调用父类构造方法
+        People.__init__(self,n,a,w,s)
+
+    #覆写父类的方法
+    def show(self):
+        print("%s 的年龄为：%d\n 身高为：%d\n 性别为：%s\n 读 %s" %(self.name,self.age,self._width,self.sex,self.grade))
+
+student = Student('敏伦',18,172,'男','大一')
+student.show()
+
+pip install 库名：下载安装库
+
+
+	GUI图形用户界面

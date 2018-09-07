@@ -1,0 +1,509 @@
+				HTML（结构）:
+
+上右下左
+
+****1.行级元素（inline）:不能换行，一行有多个inline，不可以通过css改变****宽高***，内容决定大小(可以占多行的)
+凡是有inline元素就是文本元素****
+如：span, em, strong, a, del,伪元素****
+
+****2.块级元素(block)：独占一行，可以通过css改变宽高****
+
+如：p, div, ul, li, form, address ****
+
+****3.行级块元素(inline-block):img，内容决定大小,可以改变宽高****
+
+*****扩展知识：1.行级元素只能嵌套行级元素；
+2.块级元素可以嵌套如何元素,
+特殊的：p标签不能嵌套div标签，a标签不能嵌套a标签*****
+
+margin:0 auto;/*上下为0，左右根据宽度自适应相同值(即居中)*/
+----------------------------------------------------------------
+
+
+
+<html lang="en,zh"><!--告诉爬虫引擎，网页是用什么编译的  ctrl+/注释快捷键-->
+<head>
+	<meta charset="utf-8"><!--字体使用什么编码-->
+	<title>百度网</title>
+</head>
+
+<h1 ></h1>标题
+				
+
+<html lang="en,zh"><!--告诉爬虫引擎，网页是用什么编译的  ctrl+/注释快捷键-->
+
+<title>淘宝，淘气</title> 网页脚
+
+width: 100px; 宽 。height: 100px; 高 。background-color: #f40" 背景颜色 。
+
+    HTML编码：   &nbsp; 空格 。&lt;(<)div(>)&gt;  
+
+图片标签：<img src="???.jpg" alt="这是一个性感的美女" title="美女" style="width: 200px;图片设置了宽或者高,另外一个会随着变化成正比">
+	alt:""图片报错的时候显示，title:""图片提示符
+
+<ul style="">
+	<li>apple</li>
+	<li>orange</li>
+	<li>香蕉</li>
+</ul>
+<strong>加粗，<em>倾斜字体
+
+	<a href="https:www.baidu.com" target="_blank_">百度网</a>
+	<!-- <a href=""></a>:超链接，target="_blank_" （_blank_:实现新的页面） -->
+
+<form method="get" action=""><!-- form表单 method="get"如何发送表单数据 get表单数据为url action：发送给谁--> form：表单标签，用于和前后端连接
+
+style="text-align: center;对于文本居中对齐
+
+账号:<input type="text" name="text">输入文本
+密码:<input type="passworld" name="passworld">输入密码
+<input type="submit" name="" value="百度一下"> type="submit"：提交按钮
+
+man:<input type="radio" name="sex" value="nam" checked="checked"><!-- radio选择按钮 -->
+			<!-- name="输入的值为哪个" value="":数据值 ：储存填入的值的名字; checked="checked"默认选中-->
+		<select name="province"><!-- name表示同一到题，提交答案程序员可以看到 -->
+			<option value="bijiang">bijiang</option><!-- value=""提交答案后看到的的值 -->
+			<option value="tianjing">tianjing</option>
+			<option value="guangzhou">guangzhou</option>
+			<input type="submit" name="">
+
+		</select>
+
+<p id="demo"></p>
+<a href:"#demo">置顶</a>
+<address>地址</address>
+
+					css:装饰
+
+1.行间样式<!-- <div style="width: 100px;height: 100px;background: red"> </div> -->
+2.页面样式:
+	<style type="text/css">
+		div{
+			width: 100px;
+			height: 100px;
+			background-color: red;
+		}
+3.外部css文件：定义一个css文件,(文件名.css)，引入css:<link rel="stylesheet" type="text/css" href="lesson1.css">
+		选择器:
+(1).id选择器是唯一的：	HTML文件：<div id=" only ">123</div> 
+	css文件：#only {
+	background-color: green;
+		}
+(2).class选择题可以重复：HTML文件：	<div class="demo demo01">一个标签里可以有多个class装饰(注意加空格)</div>
+					<div class="demo">class选择器：一个class选择器可以给多个html文件css装饰</div>
+	css文件：.demo{
+		color: red;
+		}
+		.demo01{
+			background-color: green;
+
+		}
+4：标签选择器(不管有没有被嵌套,所有的选中的标签(例如div)都会被css装饰):	
+		html文件：<span>123</span>
+			  <div> <span>456</span> </div>
+		css文件：span{color:red;}
+
+5.属性选择器只能包围class,id...:(html文件：	<div id="only" class="demo">123</div>
+			<div id="only2">234 </div>
+	    css文件：[id]{background-color: red;})显示两个都会被装饰
+如果没有两个一样的id或者是class:[class]{background-color: yellow;}只有clas会被css装饰
+可以给属性选择器赋值:<div id="only" class="demo">123</div>
+		    [id="only"]{background-color: red;}更确定要给哪一个赋值
+
+		
+	
+6.通配符选择器：css文件：*{backgroud-color:red;}所有的标签都会被装饰
+
+计算机的 同步 和 异步 和 现实 中 相反
+
+<!-- !important;>行间样式>id>class | 属性 (哪个在后面哪个先执行)>标签选择器>通配符 -->
+
+css权重（255进制+1）：
+	!import  	infinity（正无穷）
+(style)行间样式 	1000
+	id 	 	100
+	class|属性|伪类 10
+(<div>)标签|伪元素	1
+	通配符* 	0
+		        
+列如：	1 0 0 0 
+要变成	    1 0（要加上255+1才能变成10）
+
+比较哪个执行看权重:
+css : .wrappper .content .box{ 权重：10+10+10
+	background-color: yellow;
+}
+.wrappper .content #only{    权重：10+10+100
+	background-color: red;
+}
+******所以执行第二个.如果权重一样执行后面的********
+
+	
+父子选择器/派生选择器:
+html文件:
+<div class="demo">
+	<strong id="only">
+<em>123</em>
+	</strong>
+</div>
+<em>456</em>
+css文件：
+.demo #only em{
+	background-color: green;
+}
+
+直接子元素选择器：div的下一个标签，其他不算
+*/
+div > em{
+	background-color: yellow;
+}
+分组选择器：
+div > em > .box,
+p,
+span{
+	background-color: red;
+}
+
+颜色代码：white(ffffff) = red(ff) + green(ff) + blue(ff): {ffff = ff + ff + ff}
+	black = 000000；red = ff0000 ; green = 00ff00 ; blue = 0000ff
+每两位代码代表一个颜色，如果六位代码（每两个重复）就可以简写
+
+font-size: 12px;/*字体大小*/
+font-weight重量: bold;字体的重量/*加粗*/
+font-style:italic;倾斜体
+color:字体颜色
+font-family:arial;字体种类(标准样式)
+
+border(给这个容器加个盒子：边框):1px(粗细) solid(展示实体：实心) black(颜色)
+border-width: 100px;/*边框的宽度*/(他也有四个值:border-wider:10px 10px 10px 10px;上左下右)
+border-style: solid;/*边框的风格(solid:实体，dotted(点状虚线)，dashed(条状虚线))*/
+border-color: black;/*边框的颜色*/
+border(边框有4条边组成)border-left: 左边框 border-right:右边框;border-top: 顶边框
+transparent透明色  opacity: 0.5;/*让颜色半透明*/
+
+单行文本==容器高度(height)：单行文本垂直居中的方法
+height:100px; line-height:100px;
+
+首行缩进：text-indent:2em; == 2 * font-size:(默认)16px;
+
+去掉或者加上去掉原价的符号:
+加上： html:( <del>￥50</del> ) css:(del{ text-decoration:line-through; })
+去掉:css:  text-decoration:none; 
+下划线：css: text-decoration: underline;
+也可以去掉下划线:css: text-decoration: none;
+光标值,变成和点击网页一样的小手:css:   (cursor: pointer;)
+伪类选择器：
+html文件：<a href="https://www.baidu.com/" target="_blank_">www.baidu.com</a>
+css文件：a:hover{background-color:orange; }点击图案时显示出一个颜色框
+
+***1.行级元素（inline）:不能换行，内容决定大小(可以占多行的)不可以通过css改变****宽高***
+凡是有inline元素就是文本元素
+如：span, em, strong, a, del,伪元素
+
+***2.块级元素(block)：独占一行，可以通过css改变宽高
+
+如：p, div, ul, li, form, address 
+
+3.行级块元素(inline-block):img，内容决定大小,可以改变宽高
+
+也可以通过display: block;改变行块级元素
+原来是inline元素：span{
+	display: block;
+	background-color: red;
+	width: 100px;
+	height: 100px;
+}
+原来是block元素：div{
+	display: inline;/*原来是占满一行*/
+	background-color: yellow;
+	width: 100px;/*内容决定大小*/
+	height: 100px;
+}
+
+凡是带有inline的元素(如img)，都有文字特性(带有空格)
+先定义css样式再定义HTML引入css比较高效
+
+可以初始化标签：html文件：原来作用是倾斜<em>123</em>
+初始化后可以得到你想要的，此时<em就没有倾斜作用了。 css:em{ font-style:normal; color:#c00;}
+
+					盒模型
+盒子三大组成部分：1.盒子壁(border) 2.内边距(padding) 3.盒子内容(width+height(宽+高))
+
+有4个值得时候,如：padding: 100px 200px 250px 300px;顺序是:上 右 下 左
+三个值得时候：padding: 100px 200px 250px;顺序是：上，左右，下
+两个值：padding: 100px 200px;顺序是：上下，左右
+
+					层模型
+1.绝对定位absolute： position:absolute;
+  1.脱离原来位置
+  2.相对于最近的有定位的父级进行定位,如果没有，那么对于文档进行定位
+2.相对定位relative:  position: relative; 
+  1.保留原来位置进行定位
+  2.相对于原来的位置进行定位
+如果有最近的有定位的父级，absolute为定位(父类)，relative为参照物(子类)
+
+3.fixed(广告定位):移动页面它不会跟着动:posittion: fixed;
+div{
+	position: fixed;
+	left: 50%;/*相对于页面进行广告定位：定位到页面的一半*/
+	top: 50%;
+	margin-top: -50px;
+	margin-left: -50px; 
+}
+
+外边距(margin):游览器中body都有默认值为:8像素(px)
+
+
+
+	第六课(居中五环，两个经典bug，bf4，浮动模型)
+
+五环：（.plat{
+	position: relative;
+	left: 50%;
+	top: 50%;
+	margin-left: -190px;
+	margin-top: 93px;
+
+	width: 380px;
+	height: 190px;
+}
+.circle1,
+.circle2,
+.circle3,
+.circle4,
+.circle5{
+	position: absolute;
+	width: 100px;
+	height: 100px;
+	border-radius: 50%;
+	border:10px solid black;
+}
+.circle1{
+	border-color: #f40;
+	left: 0;
+	top: 0;
+
+}
+.circle2{
+	border-color: #040;
+	left: 130px;
+	top: 0;
+	z-index: 1;
+}
+.circle3{
+	border-color: yellow;
+	left: 260px;
+	top: 0;
+}
+.circle4{
+	border-color: blue;
+	left: 65px;
+	top: 70px;
+}
+.circle5{
+	border-color: #433;
+	left: 195px;
+	top: 70px;
+
+}）
+
+两个经典bug：1.margin塌陷：子盒子顶部外边距设置长度比父级外边距低的话没有效果
+解决：使用bfc的display:inline-block;
+
+2.html文件:	<div class="demo1">1</div>
+		<div class="demo2">2</div>
+  css文件: .demo1{
+	background-color: red;
+	margin-bottom: 100px;
+}
+.demo2{
+	margin-top: 100px;
+	background-color: green;
+}
+解决：不用解决，如果要让上一行:margin-bottom:100px,下一行:margin-top200px;
+直接设置上一级margin-bottom:300px
+
+
+使用bfc
+如何触发一个盒子的bfc：
+position:absolute;
+display:inline-block;
+float:left/right;
+overflow:hidden;(溢出部分隐藏)
+
+一个个向左对齐:float: left;
+1.浮动元素产生了浮动流：
+所有产生了浮动流的元素，块级元素(block)看不到他们，产生了bfc的元素
+和文本属性(inline)以及文本都能看到浮动元素。
+
+clear:both;清除浮动；注：它只能通过块级元素(display:block)才能实现。
+
+伪元素：本身存在在标签语言中，但是没写在HTML里面。
+可以被css正常操作:
+例如：html<span class = "track">1<span>
+css: track::before{ content:"成哥" }头伪元素。track::after{}尾伪元素
+
+
+1.html:<div class="track">
+		<div class="content">1</div>
+		<div class="content">2</div>
+		<div class="content">1</div>
+	</div>
+
+css:	*{
+	padding: 0;
+	margin: 0;
+}
+
+.track{
+	border: 1px solid #000;
+}
+.content{
+	width: 100px;
+	height: 100px;
+	background-color: red;
+	float: left;
+}
+.track::after{
+
+	content: "";
+	display: block;
+	clear: both;
+}
+
+2.html:<ul class="nva">
+		<li class="list-item">
+			<a href="#">天猫</a>
+		</li>
+		<li class="list-item">
+			<a href="#">聚划算</a>
+		</li>
+		<li class="list-item">
+			<a href="//chaoshi.tmall.com?acm=lb-zebra-148799-667861.1003.4.2429983scm=1003.4.lb-zebra-148799-667861.OTHER_14561837688591_2429983" target="_black_">天猫超市</a>
+		</li>
+	</ul>
+
+css:*{
+	margin: 0;
+	padding: 0;
+	color: #424242;
+	font-family: arial;
+
+}
+a{
+	text-decoration: none;去掉下划线
+}
+.nva{
+	list-style: none;
+}
+.nva::after{
+	content: "";
+	clear: both;
+	display: block;
+}
+.nva .list-item{
+	margin:0 10px;
+	float: left;
+	height: 30px;/*整个字体容器的高*/
+	line-height: 30px;/*让字体在容器的正中间*/
+	/*border: 1px solid #000;*/
+}
+.nva .list-item a{
+	padding: 0 5px;
+	color: #f40;
+	font-weight: bold;
+	height: 30px;/*字体的高*/
+	display: inline-block;
+	border-radius: 15px;
+}
+/*当鼠标停留在a标签，颜色会反转*/
+.nva .list-item a:hover{
+	background-color: #f40;/*反转背景是红色的*/
+	color: #fff;/*字体是白色的*/
+}
+
+
+
+扩展知识：凡是设置了position:absolute; float:left/right;内部自动转换成inline-block
+
+	    	第9课(文字溢出处理，背景图片处理(图片代替文字)，企业开发经验)
+
+ 容器溢出，要打点展示
+1.单行文本
+ html:   <p>孙怡（Sun），1993年6月4日出生于吉林省集安市，
+	中国内地影视女演员。</p>
+ css:p{ width:200px; height:20px;border:1px solid #000;line-height: 20px;/*容器height为20，文字行高也为20*/
+三件套：
+	 white-space: nowrap;      /*使文字不换行*/
+	overflow: hidden;          /*溢出部分不能展示，隐藏起来*/
+	text-overflow: ellipsis;   /*溢出的部分用...展示*/}
+
+2.多行文本
+	程序员自己打上...
+
+背景图片：
+background-image: url(52956.jpg);
+	background-size: 100px 100px;
+	background-repeat: no-repeat;不重复图片
+	background-position: top center;设置图片位置(顶中)
+
+做出图片代替文字,把a标签的背景设置图片，在网络不好的时候还有文字显示可以点进链接，同时要隐藏文字:
+html文件：<div class="logo">
+		<a href="https://www.taobao.com/" target="_black_" title="淘宝">
+			淘宝网
+		</a>
+	</div>
+
+css文件：*{
+	padding: 0;
+	margin: 0;
+}
+a{
+	display: inline-block;
+	/*下面两个是初始化a标签*/
+	text-decoration: none;/*去掉下划线*/
+	color: #424242;
+	
+	border: 1px solid #000;
+	width: 190px;
+	方法2
+	height: 0px;
+	padding-top: 90px;
+	overflow: hidden;
+
+	background-image: url(https://img.alicdn.com/tfs/TB1_uT8a5ERMeJjSspiXXbZLFXa-143-59.png);
+	background-repeat: no-repeat;
+	background-size: 190px 90px;
+	
+	方法1
+	/*text-indent: 190px;*//*首行缩进*/
+	/*white-space: nowrap;
+	overflow: hidden;*/
+}
+
+扩展知识：1.行级元素只能嵌套行级元素；
+2.块级元素可以嵌套如何元素,
+特殊的：p标签不能嵌套div标签，a标签不能嵌套a标签
+
+
+border-top-left-radius: 20px;/*对容器的上左进行半圆*/
+border-bottom-left-radius: 20px;/*对容器的下左进行半圆*/
+
+vertical-align:1px;调文本元素下划线
+
+<dl> 标签定义了定义列表（definition list）。
+
+<dl> 标签用于结合 <dt> （定义列表中的项目）和 <dd> （描述列表中的项目）。
+
+**position & transform: translate(-50%, -50%) 实现块元素百分比下居中
+.fa{
+	position: relatrve;
+}
+.fa .son{
+	font-size: 222%;
+	position: absolute;
+	left: 50%;
+	top: 50%;
+	/*实现块元素百分比的居中*/
+	transform: translate(-50%,-50%);
+}
